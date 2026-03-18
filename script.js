@@ -434,11 +434,10 @@ const drawFood = (currentTime) => {
     ctx.shadowBlur = 0;
 };
 
-const draw = (currentTime) => {
+const draw = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     drawGrid();
-    drawFood(currentTime);
+    drawFood(0);
     drawSnake();
     updateParticles();
     drawParticles();
@@ -566,8 +565,10 @@ const resetGame = () => {
 const startGame = () => {
     resetGame();
     gameState.isRunning = true;
+    gameState.lastTime = performance.now();
+    gameState.accumulator = 0;
     startOverlayElement.classList.add('hidden');
-    gameLoop(0);
+    requestAnimationFrame(gameLoop);
 };
 
 const togglePause = () => {
@@ -651,7 +652,7 @@ const gameLoop = (currentTime) => {
     const deltaTime = currentTime - gameState.lastTime;
     gameState.lastTime = currentTime;
 
-    if (!gameState.isPaused) {
+    if (!gameState.isPaused && !gameState.isGameOver) {
         gameState.accumulator += deltaTime;
         const speed = Math.max(CONFIG.minSpeed, getSpeed());
 
@@ -661,7 +662,7 @@ const gameLoop = (currentTime) => {
         }
     }
 
-    draw(currentTime);
+    draw();
     requestAnimationFrame(gameLoop);
 };
 
@@ -707,7 +708,7 @@ const init = () => {
     setupDpad();
 
     generateFood();
-    draw(0);
+    draw();
 };
 
 init();
