@@ -434,10 +434,11 @@ const drawFood = (currentTime) => {
     ctx.shadowBlur = 0;
 };
 
-const draw = () => {
+const draw = (currentTime) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     drawGrid();
-    drawFood(0);
+    drawFood(currentTime);
     drawSnake();
     updateParticles();
     drawParticles();
@@ -662,7 +663,7 @@ const gameLoop = (currentTime) => {
         }
     }
 
-    draw();
+    draw(currentTime);
     requestAnimationFrame(gameLoop);
 };
 
@@ -708,7 +709,7 @@ const init = () => {
     setupDpad();
 
     generateFood();
-    draw();
+    draw(performance.now());
 };
 
 init();
