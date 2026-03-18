@@ -8,10 +8,19 @@ const restartButton = document.getElementById('restartBtn');
 const startButton = document.getElementById('startBtn');
 const pauseButton = document.getElementById('pauseBtn');
 const themeToggle = document.getElementById('themeToggle');
+const soundToggle = document.getElementById('soundToggle');
 const difficultySelect = document.getElementById('difficulty');
 const finalScoreElement = document.getElementById('finalScore');
 const overlayTitle = document.getElementById('overlayTitle');
 const themeIcon = themeToggle.querySelector('.theme-icon');
+const soundIcon = soundToggle.querySelector('.sound-icon');
+
+// Debug logging
+const DEBUG = false;
+const log = (...args) => { if (DEBUG) console.log('[Snake]', ...args); };
+const error = (...args) => console.error('[Snake]', ...args);
+
+log('Script loaded');
 
 // Configuration
 const CONFIG = {
@@ -54,6 +63,8 @@ const CONFIG = {
     }
 };
 
+log('CONFIG created');
+
 // Game State
 const gameState = {
     snake: [{ x: 10, y: 10 }],
@@ -73,8 +84,13 @@ const gameState = {
     difficulty: 'medium',
     touchStartX: null,
     touchStartY: null,
-    particles: []
+    particles: [],
+    frameCount: 0,
+    updateCount: 0,
+    soundEnabled: true
 };
+
+log('gameState created:', gameState);
 
 // Audio
 let audioContext = null;
@@ -95,6 +111,8 @@ const getAudioContext = () => {
 };
 
 const playSound = (type) => {
+    if (!gameState.soundEnabled) return;
+    
     const ctx = getAudioContext();
     if (!ctx) return;
 
@@ -160,6 +178,7 @@ const playSound = (type) => {
 const Storage = {
     KEY_HIGH_SCORE: 'snake_high_score',
     KEY_THEME: 'snake_theme',
+    KEY_SOUND: 'snake_sound',
 
     loadHighScore() {
         const saved = localStorage.getItem(this.KEY_HIGH_SCORE);
@@ -177,6 +196,15 @@ const Storage = {
 
     saveTheme(theme) {
         localStorage.setItem(this.KEY_THEME, theme);
+    },
+
+    loadSound() {
+        const saved = localStorage.getItem(this.KEY_SOUND);
+        return saved === null || saved === 'true';
+    },
+
+    saveSound(enabled) {
+        localStorage.setItem(this.KEY_SOUND, enabled.toString());
     }
 };
 
@@ -300,6 +328,7 @@ const generateFood = () => {
         color: selectedType.color,
         points: selectedType.points
     };
+    log('Food generated at:', gameState.food);
 };
 
 const drawGrid = () => {
@@ -435,6 +464,7 @@ const drawFood = (currentTime) => {
 };
 
 const draw = (currentTime) => {
+    gameState.frameCount++;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawGrid();
@@ -451,6 +481,7 @@ const getSpeed = () => {
 };
 
 const update = () => {
+    gameState.updateCount++;
     if (!gameState.isRunning || gameState.isPaused || gameState.isGameOver) return;
 
     const opposites = { 'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left' };
@@ -459,13 +490,6 @@ const update = () => {
         const nextDir = gameState.inputBuffer.shift();
         if (opposites[nextDir] !== gameState.direction) {
             gameState.direction = nextDir;
-        }
-        while (gameState.inputBuffer.length > 0) {
-            const nextDir = gameState.inputBuffer.shift();
-            if (opposites[nextDir] !== gameState.direction) {
-                gameState.direction = nextDir;
-                break;
-            }
         }
     }
 
@@ -561,14 +585,17 @@ const resetGame = () => {
     scoreElement.textContent = '0';
     gameOverElement.classList.add('hidden');
     generateFood();
+    log('Game reset, snake at:', gameState.snake[0]);
 };
 
 const startGame = () => {
+    log('startGame() called');
     resetGame();
     gameState.isRunning = true;
     gameState.lastTime = performance.now();
     gameState.accumulator = 0;
     startOverlayElement.classList.add('hidden');
+    log('Game started, lastTime:', gameState.lastTime);
     requestAnimationFrame(gameLoop);
 };
 
@@ -611,6 +638,7 @@ const handleKeyboard = (e) => {
     if (keyMap[e.code]) {
         e.preventDefault();
         handleDirection(keyMap[e.code]);
+        log('Key pressed:', e.code, '->', keyMap[e.code]);
     }
 
     if (e.code === 'Space') {
@@ -675,6 +703,14 @@ const toggleTheme = () => {
     clearGradientCache();
 };
 
+const toggleSound = () => {
+    log('toggleSound called');
+    gameState.soundEnabled = !gameState.soundEnabled;
+    soundIcon.textContent = gameState.soundEnabled ? '🔊' : '🔇';
+    Storage.saveSound(gameState.soundEnabled);
+    log('Sound:', gameState.soundEnabled ? 'ON' : 'OFF');
+};
+
 const handleDifficultyChange = () => {
     gameState.difficulty = difficultySelect.value;
 };
@@ -687,6 +723,7 @@ const setupDpad = () => {
 };
 
 const init = () => {
+    log('init() called');
     gameState.highScore = Storage.loadHighScore();
     highScoreElement.textContent = gameState.highScore;
 
@@ -694,12 +731,16 @@ const init = () => {
     themeIcon.textContent = gameState.theme === 'light' ? '🌙' : '☀️';
     document.body.setAttribute('data-theme', gameState.theme);
 
+    gameState.soundEnabled = Storage.loadSound();
+    soundIcon.textContent = gameState.soundEnabled ? '🔊' : '🔇';
+
     difficultySelect.value = gameState.difficulty;
 
     startButton.addEventListener('click', startGame);
     restartButton.addEventListener('click', startGame);
     pauseButton.addEventListener('click', togglePause);
     themeToggle.addEventListener('click', toggleTheme);
+    soundToggle.addEventListener('click', toggleSound);
     difficultySelect.addEventListener('change', handleDifficultyChange);
 
     document.addEventListener('keydown', handleKeyboard);
@@ -710,6 +751,7 @@ const init = () => {
 
     generateFood();
     draw(performance.now());
+    log('init() complete, waiting for Start button');
 };
 
 init();
