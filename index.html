@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🐍 Snake Game</h1>
+        <div class="header-controls">
+            <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">
+                <span class="theme-icon" aria-hidden="true">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="game-container">
+        <div class="score-board">
+            <div class="score-item">
+                <span class="score-label">Score</span>
+                <span id="score" class="score-value" aria-live="polite">0</span>
+            </div>
+            <div class="score-item">
+                <span class="score-label">High Score</span>
+                <span id="highScore" class="score-value" aria-live="polite">0</span>
+            </div>
+        </div>
+
+        <div class="difficulty-selector">
+            <label for="difficulty">Difficulty:</label>
+            <select id="difficulty">
+                <option value="easy">Easy 🟢</option>
+                <option value="medium" selected>Medium 🟡</option>
+                <option value="hard">Hard 🔴</option>
+            </select>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <div id="startOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="startOverlayTitle">
+                <div class="overlay-content">
+                    <h2 id="startOverlayTitle">🐍 Snake Game</h2>
+                    <p>Use Arrow Keys or WASD to move</p>
+                    <p>Press Space to pause</p>
+                    <button id="startBtn" class="primary-btn">Start Game</button>
+                </div>
+            </div>
+            <div id="gameOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+                <div class="overlay-content">
+                    <h2 id="overlayTitle">Game Over</h2>
+                    <p>Score: <span id="finalScore">0</span></p>
+                    <button id="restartBtn" class="primary-btn">Play Again</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="pauseBtn" class="control-btn" aria-label="Pause game">
+                <span class="btn-icon" aria-hidden="true">⏸️</span>
+                <span class="btn-text">Pause</span>
+            </button>
+        </div>
+
+        <div class="dpad" aria-label="Directional controls">
+            <button class="dpad-btn dpad-up" aria-label="Move up">▲</button>
+            <div class="dpad-row">
+                <button class="dpad-btn dpad-left" aria-label="Move left">◀</button>
+                <button class="dpad-btn dpad-center" disabled aria-hidden="true">●</button>
+                <button class="dpad-btn dpad-right" aria-label="Move right">▶</button>
+            </div>
+            <button class="dpad-btn dpad-down" aria-label="Move down">▼</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
