@@ -11,6 +11,9 @@
     <header>
         <h1>🐍 Snake Game</h1>
         <div class="header-controls">
+            <button id="soundToggle" class="icon-btn" aria-label="Toggle sound">
+                <span class="sound-icon" aria-hidden="true">🔊</span>
+            </button>
             <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">
                 <span class="theme-icon" aria-hidden="true">🌙</span>
             </button>
@@ -40,7 +43,7 @@
 
         <div class="canvas-container">
             <canvas id="gameCanvas" width="400" height="400"></canvas>
-            <div id="startOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="startOverlayTitle">
+            <div id="startOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="startOverlayTitle">
                 <div class="overlay-content">
                     <h2 id="startOverlayTitle">🐍 Snake Game</h2>
                     <p>Use Arrow Keys or WASD to move</p>
