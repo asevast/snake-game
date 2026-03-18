@@ -8,8 +8,10 @@
     --danger-color: #e74c3c;
     --border-color: #e0e0e0;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    --snake-head: #2ecc71;
-    --snake-body: #27ae60;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-pill: 25px;
 }
 
 [data-theme="dark"] {
@@ -36,7 +38,7 @@ body {
     justify-content: center;
     padding: 20px;
     color: var(--text-primary);
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 header {
@@ -84,7 +86,7 @@ h1 {
 
 .game-container {
     background: var(--bg-secondary);
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     padding: 20px;
     box-shadow: 0 10px 30px var(--shadow-color);
     max-width: 400px;
@@ -97,7 +99,7 @@ h1 {
     margin-bottom: 15px;
     padding: 10px;
     background: linear-gradient(135deg, var(--accent-color), #a855f7);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     color: white;
 }
 
@@ -133,7 +135,7 @@ h1 {
 
 .difficulty-selector select {
     padding: 8px 15px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     border: 2px solid var(--border-color);
     background: var(--bg-secondary);
     color: var(--text-primary);
@@ -150,7 +152,7 @@ h1 {
 .canvas-container {
     position: relative;
     display: inline-block;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: 0 4px 15px var(--shadow-color);
 }
@@ -159,7 +161,7 @@ h1 {
     display: block;
     background: var(--bg-secondary);
     border: 3px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     max-width: 100%;
     height: auto;
 }
@@ -204,7 +206,7 @@ h1 {
     color: white;
     border: none;
     padding: 12px 30px;
-    border-radius: 25px;
+    border-radius: var(--radius-pill);
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
@@ -233,7 +235,7 @@ h1 {
     color: white;
     border: none;
     padding: 10px 25px;
-    border-radius: 25px;
+    border-radius: var(--radius-pill);
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;

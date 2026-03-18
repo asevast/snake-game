@@ -15,7 +15,7 @@ const overlayTitle = document.getElementById('overlayTitle');
 const themeIcon = themeToggle.querySelector('.theme-icon');
 const soundIcon = soundToggle.querySelector('.sound-icon');
 
-// Debug logging
+// Debug logging (disabled in production)
 const DEBUG = false;
 const log = (...args) => { if (DEBUG) console.log('[Snake]', ...args); };
 const error = (...args) => console.error('[Snake]', ...args);
@@ -24,18 +24,18 @@ log('Script loaded');
 
 // Configuration
 const CONFIG = {
-    gridSize: 20,
-    initialSpeed: 100,
-    minSpeed: 50,
-    speedDecrease: 2,
-    minSwipeDistance: 30,
-    MAX_PARTICLES: 200,
+    gridSize: 20,           // Size of each grid cell in pixels
+    initialSpeed: 100,      // Initial game tick interval in ms
+    minSpeed: 50,           // Minimum tick interval (max speed)
+    speedDecrease: 2,       // Speed increase per 10 points (ms decrease)
+    minSwipeDistance: 30,   // Minimum pixels for swipe detection
+    MAX_PARTICLES: 200,     // Max particles to prevent performance issues
     particle: {
-        minSize: 4,
-        maxSize: 10,
-        minDecay: 0.02,
-        maxDecay: 0.05,
-        gravity: 0.3
+        minSize: 4,         // Minimum particle size in pixels
+        maxSize: 10,        // Maximum particle size in pixels
+        minDecay: 0.02,     // Minimum decay rate per frame
+        maxDecay: 0.05,     // Maximum decay rate per frame
+        gravity: 0.3        // Gravity acceleration for particles
     },
     foodTypes: [
         { type: 'normal', color: '#e74c3c', points: 10, chance: 0.7 },
@@ -70,7 +70,6 @@ const gameState = {
     snake: [{ x: 10, y: 10 }],
     food: null,
     direction: 'right',
-    nextDirection: 'right',
     inputBuffer: [],
     score: 0,
     highScore: 0,
@@ -90,6 +89,9 @@ const gameState = {
     soundEnabled: true
 };
 
+// Animation frame ID for cleanup
+let animationFrameId = null;
+
 log('gameState created:', gameState);
 
 // Audio
@@ -100,7 +102,7 @@ const getAudioContext = () => {
         try {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
         } catch (e) {
-            console.warn('Audio not supported');
+            console.warn('Audio not supported:', e);
             return null;
         }
     }
@@ -173,6 +175,13 @@ const playSound = (type) => {
             break;
     }
 };
+
+// Audio cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (audioContext && audioContext.state !== 'closed') {
+        audioContext.close();
+    }
+});
 
 // Storage
 const Storage = {
@@ -576,7 +585,6 @@ const gameWin = () => {
 const resetGame = () => {
     gameState.snake = [{ x: 10, y: 10 }];
     gameState.direction = 'right';
-    gameState.nextDirection = 'right';
     gameState.inputBuffer = [];
     gameState.score = 0;
     gameState.isGameOver = false;
@@ -676,7 +684,10 @@ const handleTouchEnd = (e) => {
 };
 
 const gameLoop = (currentTime) => {
-    if (!gameState.isRunning) return;
+    if (!gameState.isRunning) {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        return;
+    }
 
     const deltaTime = currentTime - gameState.lastTime;
     gameState.lastTime = currentTime;
@@ -692,7 +703,7 @@ const gameLoop = (currentTime) => {
     }
 
     draw(currentTime);
-    requestAnimationFrame(gameLoop);
+    animationFrameId = requestAnimationFrame(gameLoop);
 };
 
 const toggleTheme = () => {
