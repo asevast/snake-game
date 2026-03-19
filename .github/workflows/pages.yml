@@ -1,0 +1,10 @@
+# Force GitHub Pages rebuild
+name: Pages Build
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Pages rebuild triggered"
